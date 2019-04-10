@@ -36,14 +36,40 @@ class PostPreprocess(Layer):
 
 class SpatialReflectionPadding(Layer):
 
-    def __init__(self, **kwargs):
+    def __init__(self, padding=1, **kwargs):
+        self.padding = padding
         super(SpatialReflectionPadding, self).__init__(**kwargs)
+
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0],
+                input_shape[1]+self.padding*2,
+                input_shape[2]+self.padding*2,
+                input_shape[3])
+
+    def call(self, x):
+        # [N, H, W, C]
+        # N : (0,0)
+        # H : (pad,pad)
+        # W : (pad,pad)
+        # C : (0,0)
+        return tf.pad(x,
+                      tf.constant([[0,0], [self.padding,self.padding], [self.padding,self.padding], [0,0]]),
+                      mode="REFLECT")
+
+
+class InstanceNorm(Layer):
+
+    def __init__(self, **kwargs):
+        super(InstanceNorm, self).__init__(**kwargs)
 
     def compute_output_shape(self, input_shape):
         return (input_shape[0], input_shape[1]+2, input_shape[2]+2, input_shape[3])
 
     def call(self, x):
-        return tf.pad(x, tf.constant([[0,0], [1,1], [1,1], [0,0]]), mode="REFLECT")
+        return tf.contrib.layers.instance_norm(x,
+                                               epsilon=1e-05,
+                                               center=True, scale=True)
+        
 
 
 class AdaIN(Layer):
