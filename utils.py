@@ -1,8 +1,9 @@
 
 import numpy as np
 from PIL import Image
+from cartoon import SAMPLE_IMG
 
-def load_net_in(img_fname, desired_size):
+def load_net_in(img_fname=SAMPLE_IMG, desired_size=256):
     input_image = Image.open(img_fname).convert("RGB")
     input_image = input_image.resize((desired_size, desired_size), Image.BICUBIC)
     input_image = np.asarray(input_image)
