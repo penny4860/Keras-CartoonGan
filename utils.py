@@ -36,5 +36,8 @@ def run_by_torch(input_image):
   
     # forward
     ys = model(input_image)
+    ys = ys.data.cpu().float()
+    ys = ys.numpy()
+    ys = np.transpose(ys, [0, 2, 3, 1])
     return ys
     
