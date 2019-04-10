@@ -54,6 +54,9 @@ if __name__ == '__main__':
     ys = model.predict(imgs)
     print(ys.shape)
 
+    from cartoon.utils import run_by_torch
+    ys_torch = run_by_torch(load_net_in())
+    print(ys_torch.shape)
 
 
 
