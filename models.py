@@ -40,12 +40,19 @@ def cartoon_generator(input_size=256):
     x = Input(shape=input_shape, name="input")
     img_input = x
 
-    # Block 1
+    # Block 1 : (256,256,3) -> (256,256,64)
     x = SpatialReflectionPadding(3)(x)
     x = Conv2D(64, (7, 7), strides=1, use_bias=True, padding='valid', name="conv1")(x)
     x = InstanceNormalization(name="in1")(x)
     x = Activation("relu")(x)
 
+    # Block 2 : (256,256,64) -> (128,128,128)
+    # Todo : strides (1->2)
+    x = Conv2D(128, (3, 3), strides=1, use_bias=True, padding='same', name="conv2_1")(x)
+#     x = Conv2D(128, (3, 3), strides=1, use_bias=True, padding='same', name="conv2_2")(x)
+#     x = InstanceNormalization(name="in2")(x)
+#     x = Activation("relu")(x)
+    
     model = Model(img_input, x, name='cartoon_generator')
     # model.load_weights(h5_fname)
     return model
@@ -67,6 +74,10 @@ if __name__ == '__main__':
     in1_a = np.load(os.path.join(PKG_ROOT, "Hayao", "2.npy"))
     in1_b = np.load(os.path.join(PKG_ROOT, "Hayao", "3.npy"))
     model.get_layer(name="in1").set_weights([in1_a, in1_b])
+    
+    w2_1 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "4.npy")), [2,3,1,0])
+    b2_1 = np.load(os.path.join(PKG_ROOT, "Hayao", "5.npy"))
+    model.get_layer(name="conv2_1").set_weights([w2_1, b2_1])
 
     imgs = np.expand_dims(load_net_in(), axis=0)
     ys = model.predict(imgs)
