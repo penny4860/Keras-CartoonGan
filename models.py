@@ -3,7 +3,9 @@
 import tensorflow as tf
 import keras
 import numpy as np
+import os
 
+from cartoon import PKG_ROOT
 from cartoon import USE_TF_KERAS
 from cartoon.layers import SpatialReflectionPadding, InstanceNormalization
 from cartoon.utils import load_net_in
@@ -41,8 +43,8 @@ def cartoon_generator(input_size=256):
     # Block 1
     x = SpatialReflectionPadding(3)(x)
     x = Conv2D(64, (7, 7), strides=1, use_bias=True, padding='valid', name="conv1")(x)
-#     x = InstanceNormalization()(x)
-#     x = Activation("relu")(x)
+    x = InstanceNormalization(name="in1")(x)
+    x = Activation("relu")(x)
 
     model = Model(img_input, x, name='cartoon_generator')
     # model.load_weights(h5_fname)
@@ -56,11 +58,15 @@ if __name__ == '__main__':
     ys_torch = run_by_torch(load_net_in())
     print(ys_torch.shape)
 
-    import os
-    from cartoon import PKG_ROOT
-    w = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "0.npy")), [2,3,1,0])
-    b = np.load(os.path.join(PKG_ROOT, "Hayao", "1.npy"))
-    model.get_layer(name="conv1").set_weights([w, b])
+    # 1st conv layer
+    w1 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "0.npy")), [2,3,1,0])
+    b1 = np.load(os.path.join(PKG_ROOT, "Hayao", "1.npy"))
+    model.get_layer(name="conv1").set_weights([w1, b1])
+
+    # 1st in layer
+    in1_a = np.load(os.path.join(PKG_ROOT, "Hayao", "2.npy"))
+    in1_b = np.load(os.path.join(PKG_ROOT, "Hayao", "3.npy"))
+    model.get_layer(name="in1").set_weights([in1_a, in1_b])
 
     imgs = np.expand_dims(load_net_in(), axis=0)
     ys = model.predict(imgs)

@@ -98,7 +98,7 @@ class InstanceNormalization(Layer):
     """
     def __init__(self,
                  axis=3,
-                 epsilon=1e-3,
+                 epsilon=1e-9,
                  center=True,
                  scale=True,
                  beta_initializer='zeros',
