@@ -53,11 +53,22 @@ def cartoon_generator(input_size=256):
     x = InstanceNormalization(name="in2")(x)
     x = Activation("relu")(x)
 
+    # Block 3 : (128,128,128) -> (64,64,256)
     # Todo : strides (1->2)
     x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='same', name="conv3_1")(x)
     x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='same', name="conv3_2")(x)
     x = InstanceNormalization(name="in3")(x)
     x = Activation("relu")(x)
+
+    # Block 4 : (64,64,256) -> (64,64,256)
+    x = SpatialReflectionPadding(1)(x)
+    x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='valid', name="conv4_1")(x)
+    x = InstanceNormalization(name="in4")(x)
+    x = Activation("relu")(x)
+
+
+#         t04 = F.relu(self.in03_1(self.conv03_2(self.conv03_1(y))))
+#         y = F.relu(self.in04_1(self.conv04_1(self.refpad04_1(t04))))
 
     
     model = Model(img_input, x, name='cartoon_generator')
@@ -105,6 +116,15 @@ if __name__ == '__main__':
     in3_a = np.load(os.path.join(PKG_ROOT, "Hayao", "14.npy"))
     in3_b = np.load(os.path.join(PKG_ROOT, "Hayao", "15.npy"))
     model.get_layer(name="in3").set_weights([in3_a, in3_b])
+
+    # Block4
+    w4_1 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "16.npy")), [2,3,1,0])
+    b4_1 = np.load(os.path.join(PKG_ROOT, "Hayao", "17.npy"))
+    model.get_layer(name="conv4_1").set_weights([w4_1, b4_1])
+    in4_a = np.load(os.path.join(PKG_ROOT, "Hayao", "18.npy"))
+    in4_b = np.load(os.path.join(PKG_ROOT, "Hayao", "19.npy"))
+    model.get_layer(name="in4").set_weights([in4_a, in4_b])
+
 
     imgs = np.expand_dims(load_net_in(), axis=0)
     ys = model.predict(imgs)
