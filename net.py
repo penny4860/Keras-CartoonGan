@@ -13,3 +13,9 @@ def load_model():
     return model
 
 
+if __name__ == '__main__':
+    model = load_model()
+    for i, p in enumerate(model.parameters()):
+        param = p.data.numpy()
+        print(i, param.shape)
+
