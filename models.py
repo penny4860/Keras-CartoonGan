@@ -36,9 +36,8 @@ def cartoon_generator(input_size=256):
     # Block 1
     x = SpatialReflectionPadding(3)(x)
     x = Conv2D(64, (7, 7), strides=1, use_bias=True, padding='valid')(x)
-    x = InstanceNormalization()(x)
-    x = Activation("relu")(x)
-    # (112,112,32)
+#     x = InstanceNormalization()(x)
+#     x = Activation("relu")(x)
 
     model = Model(img_input, x, name='cartoon_generator')
     # model.load_weights(h5_fname)
@@ -48,3 +47,13 @@ def cartoon_generator(input_size=256):
 if __name__ == '__main__':
     model = cartoon_generator(input_size=256)
     model.summary()
+
+    from cartoon.utils import load_net_in
+    import numpy as np
+    imgs = np.expand_dims(load_net_in(), axis=0)
+    ys = model.predict(imgs)
+    print(ys.shape)
+
+
+
+
