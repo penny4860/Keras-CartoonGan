@@ -70,7 +70,7 @@ def cartoon_generator(input_size=256):
     x = SpatialReflectionPadding(1)(x)
     x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='valid', name="conv4_2")(x)
     x = InstanceNormalization(name="in4_2")(x)
-#     x = tf.keras.layers.Add()([x, res_in])
+    x = tf.keras.layers.Add()([x, res_in])
 #         t04 = F.relu(self.in03_1(self.conv03_2(self.conv03_1(y))))
 #         y = F.relu(self.in04_1(self.conv04_1(self.refpad04_1(t04))))
 
