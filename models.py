@@ -2,8 +2,13 @@
 
 import tensorflow as tf
 import keras
+import numpy as np
+
 from cartoon import USE_TF_KERAS
 from cartoon.layers import SpatialReflectionPadding, InstanceNormalization
+from cartoon.utils import load_net_in
+from cartoon.utils import run_by_torch
+
 
 if USE_TF_KERAS:
     Input = tf.keras.layers.Input
@@ -48,15 +53,19 @@ if __name__ == '__main__':
     model = cartoon_generator(input_size=256)
     model.summary()
 
-    from cartoon.utils import load_net_in
-    import numpy as np
+    ys_torch = run_by_torch(load_net_in())
+    print(ys_torch.shape)
+
+    import os
+    from cartoon import PKG_ROOT
+    w = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "0.npy")), [2,3,1,0])
+    b = np.load(os.path.join(PKG_ROOT, "Hayao", "1.npy"))
+    model.get_layer(index=2).set_weights([w, b])
+
     imgs = np.expand_dims(load_net_in(), axis=0)
     ys = model.predict(imgs)
     print(ys.shape)
-
-    from cartoon.utils import run_by_torch
-    ys_torch = run_by_torch(load_net_in())
-    print(ys_torch.shape)
+    print(np.allclose(ys, ys_torch, rtol=1e-3, atol=1e-3))
 
 
 
