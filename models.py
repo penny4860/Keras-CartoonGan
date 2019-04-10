@@ -40,7 +40,7 @@ def cartoon_generator(input_size=256):
 
     # Block 1
     x = SpatialReflectionPadding(3)(x)
-    x = Conv2D(64, (7, 7), strides=1, use_bias=True, padding='valid')(x)
+    x = Conv2D(64, (7, 7), strides=1, use_bias=True, padding='valid', name="conv1")(x)
 #     x = InstanceNormalization()(x)
 #     x = Activation("relu")(x)
 
@@ -60,7 +60,7 @@ if __name__ == '__main__':
     from cartoon import PKG_ROOT
     w = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "0.npy")), [2,3,1,0])
     b = np.load(os.path.join(PKG_ROOT, "Hayao", "1.npy"))
-    model.get_layer(index=2).set_weights([w, b])
+    model.get_layer(name="conv1").set_weights([w, b])
 
     imgs = np.expand_dims(load_net_in(), axis=0)
     ys = model.predict(imgs)
