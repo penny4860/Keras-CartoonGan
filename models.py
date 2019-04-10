@@ -50,8 +50,8 @@ def cartoon_generator(input_size=256):
     # Todo : strides (1->2)
     x = Conv2D(128, (3, 3), strides=1, use_bias=True, padding='same', name="conv2_1")(x)
     x = Conv2D(128, (3, 3), strides=1, use_bias=True, padding='same', name="conv2_2")(x)
-#     x = InstanceNormalization(name="in2")(x)
-#     x = Activation("relu")(x)
+    x = InstanceNormalization(name="in2")(x)
+    x = Activation("relu")(x)
     
     model = Model(img_input, x, name='cartoon_generator')
     # model.load_weights(h5_fname)
@@ -83,6 +83,10 @@ if __name__ == '__main__':
     b2_2 = np.load(os.path.join(PKG_ROOT, "Hayao", "7.npy"))
     model.get_layer(name="conv2_2").set_weights([w2_2, b2_2])
 
+    # 2nd in layer
+    in2_a = np.load(os.path.join(PKG_ROOT, "Hayao", "8.npy"))
+    in2_b = np.load(os.path.join(PKG_ROOT, "Hayao", "9.npy"))
+    model.get_layer(name="in2").set_weights([in2_a, in2_b])
 
     imgs = np.expand_dims(load_net_in(), axis=0)
     ys = model.predict(imgs)
