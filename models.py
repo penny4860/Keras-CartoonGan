@@ -59,6 +59,7 @@ def cartoon_generator(input_size=256):
     x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='same', name="conv3_2")(x)
     x = InstanceNormalization(name="in3")(x)
     x = Activation("relu")(x)
+    res_in = x
 
     # Block 4 : (64,64,256) -> (64,64,256)
     x = SpatialReflectionPadding(1)(x)
@@ -66,7 +67,10 @@ def cartoon_generator(input_size=256):
     x = InstanceNormalization(name="in4_1")(x)
     x = Activation("relu")(x)
 
-
+    x = SpatialReflectionPadding(1)(x)
+    x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='valid', name="conv4_2")(x)
+    x = InstanceNormalization(name="in4_2")(x)
+#     x = tf.keras.layers.Add()([x, res_in])
 #         t04 = F.relu(self.in03_1(self.conv03_2(self.conv03_1(y))))
 #         y = F.relu(self.in04_1(self.conv04_1(self.refpad04_1(t04))))
 
@@ -124,6 +128,13 @@ if __name__ == '__main__':
     in4_1a = np.load(os.path.join(PKG_ROOT, "Hayao", "18.npy"))
     in4_1b = np.load(os.path.join(PKG_ROOT, "Hayao", "19.npy"))
     model.get_layer(name="in4_1").set_weights([in4_1a, in4_1b])
+
+    w4_2 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "20.npy")), [2,3,1,0])
+    b4_2 = np.load(os.path.join(PKG_ROOT, "Hayao", "21.npy"))
+    model.get_layer(name="conv4_2").set_weights([w4_2, b4_2])
+    in4_2a = np.load(os.path.join(PKG_ROOT, "Hayao", "22.npy"))
+    in4_2b = np.load(os.path.join(PKG_ROOT, "Hayao", "23.npy"))
+    model.get_layer(name="in4_2").set_weights([in4_2a, in4_2b])
 
 
     imgs = np.expand_dims(load_net_in(), axis=0)
