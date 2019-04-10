@@ -63,7 +63,7 @@ def cartoon_generator(input_size=256):
     # Block 4 : (64,64,256) -> (64,64,256)
     x = SpatialReflectionPadding(1)(x)
     x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='valid', name="conv4_1")(x)
-    x = InstanceNormalization(name="in4")(x)
+    x = InstanceNormalization(name="in4_1")(x)
     x = Activation("relu")(x)
 
 
@@ -121,9 +121,9 @@ if __name__ == '__main__':
     w4_1 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "16.npy")), [2,3,1,0])
     b4_1 = np.load(os.path.join(PKG_ROOT, "Hayao", "17.npy"))
     model.get_layer(name="conv4_1").set_weights([w4_1, b4_1])
-    in4_a = np.load(os.path.join(PKG_ROOT, "Hayao", "18.npy"))
-    in4_b = np.load(os.path.join(PKG_ROOT, "Hayao", "19.npy"))
-    model.get_layer(name="in4").set_weights([in4_a, in4_b])
+    in4_1a = np.load(os.path.join(PKG_ROOT, "Hayao", "18.npy"))
+    in4_1b = np.load(os.path.join(PKG_ROOT, "Hayao", "19.npy"))
+    model.get_layer(name="in4_1").set_weights([in4_1a, in4_1b])
 
 
     imgs = np.expand_dims(load_net_in(), axis=0)
