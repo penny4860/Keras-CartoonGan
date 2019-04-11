@@ -47,15 +47,13 @@ def cartoon_generator(input_size=256):
     x = Activation("relu")(x)
 
     # Block 2 : (256,256,64) -> (128,128,128)
-    # Todo : strides (1->2)
-    x = Conv2D(128, (3, 3), strides=1, use_bias=True, padding='same', name="conv2_1")(x)
+    x = Conv2D(128, (3, 3), strides=2, use_bias=True, padding='same', name="conv2_1")(x)
     x = Conv2D(128, (3, 3), strides=1, use_bias=True, padding='same', name="conv2_2")(x)
     x = InstanceNormalization(name="in2")(x)
     x = Activation("relu")(x)
 
     # Block 3 : (128,128,128) -> (64,64,256)
-    # Todo : strides (1->2)
-    x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='same', name="conv3_1")(x)
+    x = Conv2D(256, (3, 3), strides=2, use_bias=True, padding='same', name="conv3_1")(x)
     x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='same', name="conv3_2")(x)
     x = InstanceNormalization(name="in3")(x)
     x = Activation("relu")(x)
