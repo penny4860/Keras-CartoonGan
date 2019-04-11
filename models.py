@@ -3,9 +3,7 @@
 import tensorflow as tf
 import keras
 import numpy as np
-import os
 
-from cartoon import PKG_ROOT
 from cartoon import USE_TF_KERAS
 from cartoon.layers import SpatialReflectionPadding, InstanceNormalization
 from cartoon.utils import load_net_in
@@ -178,33 +176,27 @@ def postprocess(ys):
 
 
 if __name__ == '__main__':
-    model_name = "Shinkai"
-    
-    model = cartoon_generator(input_size=256)
-    model.load_weights("params/{}.h5".format(model_name))
-
-    ys_torch = run_by_torch(load_net_in(), model_name)
-    print(ys_torch.shape)
-    
-    imgs = np.expand_dims(load_net_in(), axis=0)
-    ys = model.predict(imgs)
-
-    ys = postprocess(ys)
-    ys_torch = postprocess(ys_torch)
-
     import matplotlib.pyplot as plt
+    input_size = 512
+    model_names = ["Hayao", "Hosoda", "Paprika", "Shinkai"]
+    model = cartoon_generator(input_size=input_size)
+
     fig, ax = plt.subplots()
-    plt.subplot(1, 3, 1)
+    plt.subplot(1, 5, 1)
     plt.axis('off')
     plt.title("input")
     plt.imshow(postprocess(load_net_in()))
-    plt.subplot(1, 3, 2)
-    plt.axis('off')
-    plt.title("keras output")
-    plt.imshow(ys[0])
-    plt.subplot(1, 3, 3)
-    plt.axis('off')    
-    plt.title("pytorch output")
-    plt.imshow(ys_torch[0])
+    
+    for i, model_name in enumerate(model_names):
+        model.load_weights("params/{}.h5".format(model_name))
+    
+        imgs = np.expand_dims(load_net_in(desired_size=input_size), axis=0)
+        ys = model.predict(imgs)
+        y = postprocess(ys)[0]
+
+        plt.subplot(1, 5, i+2)
+        plt.axis('off')
+        plt.title(model_name)
+        plt.imshow(y)
     plt.show()
 
