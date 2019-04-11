@@ -355,10 +355,12 @@ def load_params(model, params_root):
     return model
 
 if __name__ == '__main__':
+    model_name = "Hayao"
+    
     model = cartoon_generator(input_size=256)
-    model = load_params(model, params_root=os.path.join(PKG_ROOT, "Hayao"))
+    model = load_params(model, params_root=os.path.join(PKG_ROOT, model_name))
 
-    ys_torch = run_by_torch(load_net_in())
+    ys_torch = run_by_torch(load_net_in(), model_name)
     print(ys_torch.shape)
     
     imgs = np.expand_dims(load_net_in(), axis=0)

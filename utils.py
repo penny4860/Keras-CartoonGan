@@ -17,12 +17,12 @@ def load_net_in(img_fname=SAMPLE_IMG, desired_size=256):
     input_image = -1 + 2 * input_image
     return input_image
 
-def run_by_torch(input_image):
+def run_by_torch(input_image, model_name="Hayao"):
     import torch
     from cartoon import MODEL_ROOT
     def load_model():
         model = Transformer()
-        model.load_state_dict(torch.load(os.path.join(MODEL_ROOT, 'Hayao_net_G_float.pth')))
+        model.load_state_dict(torch.load(os.path.join(MODEL_ROOT, '{}_net_G_float.pth'.format(model_name))))
         model.eval()
         model.float()
         return model
