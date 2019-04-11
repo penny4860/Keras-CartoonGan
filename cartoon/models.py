@@ -162,6 +162,8 @@ def postprocess(ys):
 
 
 if __name__ == '__main__':
+    from cartoon import MODEL_ROOT
+    import os
     import matplotlib.pyplot as plt
     input_size = 512
     model_names = ["Hayao", "Hosoda", "Paprika", "Shinkai"]
@@ -174,7 +176,9 @@ if __name__ == '__main__':
     plt.imshow(postprocess(load_net_in()))
     
     for i, model_name in enumerate(model_names):
-        model.load_weights("params/{}.h5".format(model_name))
+        
+        model_path = os.path.join(MODEL_ROOT, "{}.h5".format(model_name))
+        model.load_weights(model_path)
     
         imgs = np.expand_dims(load_net_in(desired_size=input_size), axis=0)
         ys = model.predict(imgs)
