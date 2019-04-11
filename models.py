@@ -147,6 +147,22 @@ def cartoon_generator(input_size=256):
     x = InstanceNormalization(name="in11_2")(x)
     x = tf.keras.layers.Add()([x, res_in])
 
+    # Block 1 : (64,64,256) -> (128,128,128)
+    x = tf.keras.layers.Conv2DTranspose(128, 3, 2, padding="same", name="deconv1_1")(x)
+    x = Conv2D(128, (3, 3), strides=1, use_bias=True, padding="same", name="deconv1_2")(x)
+    x = InstanceNormalization(name="in_deconv1")(x)
+    x = Activation("relu")(x)
+
+    # Block 2 : (128,128,128) -> (256,256,64)
+    x = tf.keras.layers.Conv2DTranspose(64, 3, 2, padding="same", name="deconv2_1")(x)
+    x = Conv2D(64, (3, 3), strides=1, use_bias=True, padding="same", name="deconv2_2")(x)
+    x = InstanceNormalization(name="in_deconv2")(x)
+    x = Activation("relu")(x)
+
+    # Block 3 : (256,256,64) -> (256,256,3)
+    x = SpatialReflectionPadding(3)(x)
+    x = Conv2D(3, (7, 7), strides=1, use_bias=True, padding="valid", name="deconv3")(x)
+    x = Activation("tanh")(x)
     
     model = Model(img_input, x, name='cartoon_generator')
     # model.load_weights(h5_fname)
@@ -308,11 +324,44 @@ if __name__ == '__main__':
     in11_2b = np.load(os.path.join(PKG_ROOT, "Hayao", "79.npy"))
     model.get_layer(name="in11_2").set_weights([in11_2a, in11_2b])
 
+    # Deconv Block1
+    w_d3_1 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "80.npy")), [2,3,1,0])
+    b_d3_1 = np.load(os.path.join(PKG_ROOT, "Hayao", "81.npy"))
+    model.get_layer(name="deconv1_1").set_weights([w_d3_1, b_d3_1])
+    w_d3_2 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "82.npy")), [2,3,1,0])
+    b_d3_2 = np.load(os.path.join(PKG_ROOT, "Hayao", "83.npy"))
+    model.get_layer(name="deconv1_2").set_weights([w_d3_2, b_d3_2])
+    in_d3_a = np.load(os.path.join(PKG_ROOT, "Hayao", "84.npy"))
+    in_d3_b = np.load(os.path.join(PKG_ROOT, "Hayao", "85.npy"))
+    model.get_layer(name="in_deconv1").set_weights([in_d3_a, in_d3_b])
+
+    # Deconv Block2
+    w_d3_1 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "86.npy")), [2,3,1,0])
+    b_d3_1 = np.load(os.path.join(PKG_ROOT, "Hayao", "87.npy"))
+    model.get_layer(name="deconv2_1").set_weights([w_d3_1, b_d3_1])
+    w_d3_2 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "88.npy")), [2,3,1,0])
+    b_d3_2 = np.load(os.path.join(PKG_ROOT, "Hayao", "89.npy"))
+    model.get_layer(name="deconv2_2").set_weights([w_d3_2, b_d3_2])
+    in_d3_a = np.load(os.path.join(PKG_ROOT, "Hayao", "90.npy"))
+    in_d3_b = np.load(os.path.join(PKG_ROOT, "Hayao", "91.npy"))
+    model.get_layer(name="in_deconv2").set_weights([in_d3_a, in_d3_b])
+
+    w_d3_1 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "92.npy")), [2,3,1,0])
+    b_d3_1 = np.load(os.path.join(PKG_ROOT, "Hayao", "93.npy"))
+    model.get_layer(name="deconv3").set_weights([w_d3_1, b_d3_1])
 
     imgs = np.expand_dims(load_net_in(), axis=0)
     ys = model.predict(imgs)
     print(ys.shape)
     print(np.allclose(ys, ys_torch, rtol=1e-3, atol=1e-3))
+    ys = ys[:,:,:,::-1]
+    ys = ys * 0.5 + 0.5
+
+    import matplotlib.pyplot as plt
+    plt.imshow(ys[0])
+    plt.show()
+
+
 
 
 
