@@ -71,9 +71,18 @@ def cartoon_generator(input_size=256):
     x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='valid', name="conv4_2")(x)
     x = InstanceNormalization(name="in4_2")(x)
     x = tf.keras.layers.Add()([x, res_in])
-#         t04 = F.relu(self.in03_1(self.conv03_2(self.conv03_1(y))))
-#         y = F.relu(self.in04_1(self.conv04_1(self.refpad04_1(t04))))
+    res_in = x
 
+    # Block 5 : (64,64,256) -> (64,64,256)
+    x = SpatialReflectionPadding(1)(x)
+    x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='valid', name="conv5_1")(x)
+    x = InstanceNormalization(name="in5_1")(x)
+    x = Activation("relu")(x)
+
+    x = SpatialReflectionPadding(1)(x)
+    x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='valid', name="conv5_2")(x)
+    x = InstanceNormalization(name="in5_2")(x)
+    x = tf.keras.layers.Add()([x, res_in])
     
     model = Model(img_input, x, name='cartoon_generator')
     # model.load_weights(h5_fname)
@@ -135,6 +144,21 @@ if __name__ == '__main__':
     in4_2a = np.load(os.path.join(PKG_ROOT, "Hayao", "22.npy"))
     in4_2b = np.load(os.path.join(PKG_ROOT, "Hayao", "23.npy"))
     model.get_layer(name="in4_2").set_weights([in4_2a, in4_2b])
+
+    # Block5
+    w5_1 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "24.npy")), [2,3,1,0])
+    b5_1 = np.load(os.path.join(PKG_ROOT, "Hayao", "25.npy"))
+    model.get_layer(name="conv5_1").set_weights([w5_1, b5_1])
+    in5_1a = np.load(os.path.join(PKG_ROOT, "Hayao", "26.npy"))
+    in5_1b = np.load(os.path.join(PKG_ROOT, "Hayao", "27.npy"))
+    model.get_layer(name="in5_1").set_weights([in5_1a, in5_1b])
+
+    w5_2 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "28.npy")), [2,3,1,0])
+    b5_2 = np.load(os.path.join(PKG_ROOT, "Hayao", "29.npy"))
+    model.get_layer(name="conv5_2").set_weights([w5_2, b5_2])
+    in5_2a = np.load(os.path.join(PKG_ROOT, "Hayao", "30.npy"))
+    in5_2b = np.load(os.path.join(PKG_ROOT, "Hayao", "31.npy"))
+    model.get_layer(name="in5_2").set_weights([in5_2a, in5_2b])
 
 
     imgs = np.expand_dims(load_net_in(), axis=0)
