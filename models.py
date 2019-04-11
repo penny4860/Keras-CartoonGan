@@ -177,13 +177,7 @@ def postprocess(ys):
     return ys
 
 
-if __name__ == '__main__':
-    model = cartoon_generator(input_size=256)
-    model.summary()
-
-    ys_torch = run_by_torch(load_net_in())
-    print(ys_torch.shape)
-
+def load_params(model):
     # 1st conv layer
     w1 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "0.npy")), [2,3,1,0])
     b1 = np.load(os.path.join(PKG_ROOT, "Hayao", "1.npy"))
@@ -357,7 +351,15 @@ if __name__ == '__main__':
     w_d3_1 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "92.npy")), [2,3,1,0])
     b_d3_1 = np.load(os.path.join(PKG_ROOT, "Hayao", "93.npy"))
     model.get_layer(name="deconv3").set_weights([w_d3_1, b_d3_1])
+    return model
 
+if __name__ == '__main__':
+    model = cartoon_generator(input_size=256)
+    model = load_params(model)
+
+    ys_torch = run_by_torch(load_net_in())
+    print(ys_torch.shape)
+    
     imgs = np.expand_dims(load_net_in(), axis=0)
     ys = model.predict(imgs)
 
