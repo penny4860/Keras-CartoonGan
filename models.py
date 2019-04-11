@@ -78,11 +78,22 @@ def cartoon_generator(input_size=256):
     x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='valid', name="conv5_1")(x)
     x = InstanceNormalization(name="in5_1")(x)
     x = Activation("relu")(x)
-
     x = SpatialReflectionPadding(1)(x)
     x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='valid', name="conv5_2")(x)
     x = InstanceNormalization(name="in5_2")(x)
     x = tf.keras.layers.Add()([x, res_in])
+    res_in = x
+
+    # Block 6 : (64,64,256) -> (64,64,256)
+    x = SpatialReflectionPadding(1)(x)
+    x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='valid', name="conv6_1")(x)
+    x = InstanceNormalization(name="in6_1")(x)
+    x = Activation("relu")(x)
+    x = SpatialReflectionPadding(1)(x)
+    x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='valid', name="conv6_2")(x)
+    x = InstanceNormalization(name="in6_2")(x)
+    x = tf.keras.layers.Add()([x, res_in])
+
     
     model = Model(img_input, x, name='cartoon_generator')
     # model.load_weights(h5_fname)
@@ -159,6 +170,21 @@ if __name__ == '__main__':
     in5_2a = np.load(os.path.join(PKG_ROOT, "Hayao", "30.npy"))
     in5_2b = np.load(os.path.join(PKG_ROOT, "Hayao", "31.npy"))
     model.get_layer(name="in5_2").set_weights([in5_2a, in5_2b])
+
+    # Block6
+    w6_1 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "32.npy")), [2,3,1,0])
+    b6_1 = np.load(os.path.join(PKG_ROOT, "Hayao", "33.npy"))
+    model.get_layer(name="conv6_1").set_weights([w6_1, b6_1])
+    in6_1a = np.load(os.path.join(PKG_ROOT, "Hayao", "34.npy"))
+    in6_1b = np.load(os.path.join(PKG_ROOT, "Hayao", "35.npy"))
+    model.get_layer(name="in6_1").set_weights([in6_1a, in6_1b])
+
+    w6_2 = np.transpose(np.load(os.path.join(PKG_ROOT, "Hayao", "36.npy")), [2,3,1,0])
+    b6_2 = np.load(os.path.join(PKG_ROOT, "Hayao", "37.npy"))
+    model.get_layer(name="conv6_2").set_weights([w6_2, b6_2])
+    in6_2a = np.load(os.path.join(PKG_ROOT, "Hayao", "38.npy"))
+    in6_2b = np.load(os.path.join(PKG_ROOT, "Hayao", "39.npy"))
+    model.get_layer(name="in6_2").set_weights([in6_2a, in6_2b])
 
 
     imgs = np.expand_dims(load_net_in(), axis=0)
