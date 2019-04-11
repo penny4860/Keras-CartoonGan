@@ -1,35 +1,21 @@
 # -*- coding: utf-8 -*-
 
 import tensorflow as tf
-import keras
 import numpy as np
 
-from cartoon import USE_TF_KERAS
 from cartoon.layers import SpatialReflectionPadding, InstanceNormalization
 from cartoon.utils import load_net_in
-from cartoon.utils import run_by_torch
 
+Input = tf.keras.layers.Input
+Conv2D = tf.keras.layers.Conv2D
+DepthwiseConv2D = tf.keras.layers.DepthwiseConv2D
+BatchNormalization = tf.keras.layers.BatchNormalization
+Activation = tf.keras.layers.Activation
+MaxPooling2D = tf.keras.layers.MaxPooling2D
+Layer = tf.keras.layers.Layer
+Model = tf.keras.models.Model
+VGG19 = tf.keras.applications.vgg19.VGG19
 
-if USE_TF_KERAS:
-    Input = tf.keras.layers.Input
-    Conv2D = tf.keras.layers.Conv2D
-    DepthwiseConv2D = tf.keras.layers.DepthwiseConv2D
-    BatchNormalization = tf.keras.layers.BatchNormalization
-    Activation = tf.keras.layers.Activation
-    MaxPooling2D = tf.keras.layers.MaxPooling2D
-    Layer = tf.keras.layers.Layer
-    Model = tf.keras.models.Model
-    VGG19 = tf.keras.applications.vgg19.VGG19
-else:
-    Input = keras.layers.Input
-    Conv2D = keras.layers.Conv2D
-    DepthwiseConv2D = keras.layers.DepthwiseConv2D
-    BatchNormalization = keras.layers.BatchNormalization
-    Activation = keras.layers.Activation
-    MaxPooling2D = keras.layers.MaxPooling2D
-    Layer = keras.layers.Layer
-    Model = keras.models.Model
-    VGG19 = keras.applications.vgg19.VGG19
 
 def cartoon_generator(input_size=256):
 
