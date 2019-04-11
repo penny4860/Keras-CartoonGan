@@ -1,14 +1,7 @@
-
+# -*- coding: utf-8 -*-
 
 import tensorflow as tf
-import keras
-from cartoon import USE_TF_KERAS
-
-if USE_TF_KERAS:
-    Layer = tf.keras.layers.Layer
-else:
-    Layer = keras.layers.Layer
-
+Layer = tf.keras.layers.Layer
 
 class VggPreprocess(Layer):
 
