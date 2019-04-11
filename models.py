@@ -169,6 +169,14 @@ def cartoon_generator(input_size=256):
     return model
 
 
+def postprocess(ys):
+    # bgr -> rgb
+    ys = ys[...,::-1]
+    # [0, 1]-range
+    ys = ys * 0.5 + 0.5
+    return ys
+
+
 if __name__ == '__main__':
     model = cartoon_generator(input_size=256)
     model.summary()
@@ -352,16 +360,23 @@ if __name__ == '__main__':
 
     imgs = np.expand_dims(load_net_in(), axis=0)
     ys = model.predict(imgs)
-    print(ys.shape)
-    print(np.allclose(ys, ys_torch, rtol=1e-3, atol=1e-3))
-    ys = ys[:,:,:,::-1]
-    ys = ys * 0.5 + 0.5
+
+    ys = postprocess(ys)
+    ys_torch = postprocess(ys_torch)
 
     import matplotlib.pyplot as plt
+    fig, ax = plt.subplots()
+    plt.subplot(1, 3, 1)
+    plt.axis('off')
+    plt.title("input")
+    plt.imshow(postprocess(load_net_in()))
+    plt.subplot(1, 3, 2)
+    plt.axis('off')
+    plt.title("keras output")
     plt.imshow(ys[0])
+    plt.subplot(1, 3, 3)
+    plt.axis('off')    
+    plt.title("pytorch output")
+    plt.imshow(ys_torch[0])
     plt.show()
-
-
-
-
 
