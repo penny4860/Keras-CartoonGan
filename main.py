@@ -19,18 +19,19 @@ if __name__ == '__main__':
     for i, fname in enumerate(img_files):
         plt.subplot(n_rows, n_cols, 3*i + 1)
         plt.axis('off')
-        plt.title("input photo")
+        # plt.title("input photo")
         plt.imshow(postprocess(load_net_in(fname)))
     
         for j, model_path in enumerate(model_names):
             model.load_weights(model_path)
         
-            imgs = np.expand_dims(load_net_in(desired_size=input_size), axis=0)
+            imgs = np.expand_dims(load_net_in(fname, desired_size=input_size), axis=0)
             ys = model.predict(imgs)
             y = postprocess(ys)[0]
     
             plt.subplot(n_rows, n_cols, 3*i+j+2)
             plt.axis('off')
-            plt.title(os.path.basename(model_path))
+            # plt.title(os.path.basename(model_path))
             plt.imshow(y)
+    plt.subplots_adjust(bottom = 0, top = 1, hspace = 0.01, wspace = 0.01)
     plt.show()
