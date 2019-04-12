@@ -31,7 +31,7 @@ project/root> python main.py -i sample_in/sjtu.jpg
 
 You can see the following result.
 
-<img src = 'assets/sample_out.jpg' height = '450px'>
+<img src = 'assets/sample_out.jpg' height = '200px'>
 
 
 ## 2. Reproduce Paper Results
