@@ -7,31 +7,30 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+INPUT_IMG_FNAME = "sample_in/sjtu.jpg"
+INPUT_SIZE = 512
+
 if __name__ == '__main__':
-    input_size = 512
-    img_files = ["sample_in/in1.png", "sample_in/in2.png", "sample_in/in3.png"]
-    model_names = ["params/Shinkai.h5", "params/Hayao.h5"]
-    n_rows = n_cols = 3
+    model_names = ["params/Hayao.h5", "params/Hosoda.h5", "params/Paprika.h5", "params/Shinkai.h5"]
     
-    model = cartoon_generator(input_size=input_size)
+    model = cartoon_generator(input_size=INPUT_SIZE)
 
     fig, ax = plt.subplots()
-    for i, fname in enumerate(img_files):
-        plt.subplot(n_rows, n_cols, 3*i + 1)
+    plt.subplot(1, 5, 1)
+    plt.axis('off')
+    plt.title("input photo")
+    plt.imshow(postprocess(load_net_in(INPUT_IMG_FNAME)))
+
+    for j, model_path in enumerate(model_names):
+        model.load_weights(model_path)
+    
+        imgs = np.expand_dims(load_net_in(INPUT_IMG_FNAME, desired_size=INPUT_SIZE), axis=0)
+        ys = model.predict(imgs)
+        y = postprocess(ys)[0]
+
+        plt.subplot(1, 5, j+2)
         plt.axis('off')
-        # plt.title("input photo")
-        plt.imshow(postprocess(load_net_in(fname)))
-    
-        for j, model_path in enumerate(model_names):
-            model.load_weights(model_path)
-        
-            imgs = np.expand_dims(load_net_in(fname, desired_size=input_size), axis=0)
-            ys = model.predict(imgs)
-            y = postprocess(ys)[0]
-    
-            plt.subplot(n_rows, n_cols, 3*i+j+2)
-            plt.axis('off')
-            # plt.title(os.path.basename(model_path))
-            plt.imshow(y)
+        plt.title(os.path.basename(model_path))
+        plt.imshow(y)
     plt.subplots_adjust(bottom = 0, top = 1, hspace = 0.01, wspace = 0.01)
     plt.show()
