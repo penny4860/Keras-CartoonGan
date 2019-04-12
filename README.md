@@ -23,6 +23,19 @@ $ activate cartoon # in linux "source activate cartoon"
 
 ## 1. Convert Image to Cartoon
 
+You can generate cartoonized image through the following command.
+
+```
+project/root> python main.py -i sample_in/sjtu.jpg
+```
+
+You can see the following result.
+
+<img src = 'assets/sample_out.jpg' height = '450px'>
+
+
+## 2. Reproduce Paper Results
+
 <table align='center'>
 <tr align='center'>
 <td> Paper Result </td>
@@ -33,6 +46,6 @@ $ activate cartoon # in linux "source activate cartoon"
 <td><img src = 'assets/reproduce.jpg' height = '400px'>
 </tr>
 
-If you run main.py, you can reproduce the above results!
+If you just run [main.py](https://github.com/penny4860/Keras-CartoonGan/blob/master/main.py), you can reproduce the above results!
 
 
