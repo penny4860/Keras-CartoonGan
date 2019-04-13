@@ -193,35 +193,33 @@ def postprocess(ys):
 
 
 if __name__ == '__main__':
-    
-    model = cartoon_discriminator()
-    model.summary()
-    
-#     from cartoon import MODEL_ROOT
-#     import os
-#     import matplotlib.pyplot as plt
-#     input_size = 512
-#     model_names = ["Hayao", "Hosoda", "Paprika", "Shinkai"]
-#     model = cartoon_generator(input_size=input_size)
-# 
-#     fig, ax = plt.subplots()
-#     plt.subplot(1, 5, 1)
-#     plt.axis('off')
-#     plt.title("input")
-#     plt.imshow(postprocess(load_net_in()))
-#     
-#     for i, model_name in enumerate(model_names):
-#         
-#         model_path = os.path.join(MODEL_ROOT, "{}.h5".format(model_name))
-#         model.load_weights(model_path)
-#     
-#         imgs = np.expand_dims(load_net_in(desired_size=input_size), axis=0)
-#         ys = model.predict(imgs)
-#         y = postprocess(ys)[0]
-# 
-#         plt.subplot(1, 5, i+2)
-#         plt.axis('off')
-#         plt.title(model_name)
-#         plt.imshow(y)
-#     plt.show()
+    from cartoon import MODEL_ROOT
+    import os
+    import matplotlib.pyplot as plt
+    input_size = 512
+    model_names = ["Hayao", "Hosoda", "Paprika", "Shinkai"]
+    model = cartoon_generator(input_size=input_size)
+ 
+    fig, ax = plt.subplots()
+    plt.subplot(1, 5, 1)
+    plt.axis('off')
+    plt.title("input")
+    plt.imshow(postprocess(load_net_in()))
+     
+    for i, model_name in enumerate(model_names):
+         
+        model_path = os.path.join(MODEL_ROOT, "{}.h5".format(model_name))
+        model.load_weights(model_path)
+     
+        imgs = np.expand_dims(load_net_in(desired_size=input_size), axis=0)
+        ys = model.predict(imgs)
+        y = postprocess(ys)[0]
+ 
+        plt.subplot(1, 5, i+2)
+        plt.axis('off')
+        plt.title(model_name)
+        plt.imshow(y)
+    plt.show()
 
+#     model = cartoon_discriminator()
+#     model.summary()
