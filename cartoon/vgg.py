@@ -6,6 +6,7 @@ from cartoon.layers import VggPreprocess
 tf.keras.applications.vgg19.preprocess_input
 Model = tf.keras.models.Model
 
+# Todo : preprocess layer를 parameter로 선택
 def vgg_feat_extractor(input_size=256):
     def _build_model(input_shape):
         img_input = tf.keras.layers.Input(shape=input_shape, name="input")
