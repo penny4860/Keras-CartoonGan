@@ -16,7 +16,7 @@ def loss_func(y_true, y_pred):
     feat_model = vgg_feat_extractor()
     y_true_feat = feat_model(y_true)
     y_pred_feat = feat_model(y_pred)
-    loss = tf.losses.absolute_difference(y_true_feat, y_pred_feat, reduction=tf.losses.Reduction.MEAN)
+    loss = tf.losses.absolute_difference(y_true_feat, y_pred_feat)
     return loss
 
 
