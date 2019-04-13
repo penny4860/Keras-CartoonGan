@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from cartoon import MODEL_ROOT
-from cartoon.models import cartoon_generator, postprocess
+from cartoon.models import cartoon_generator
 from cartoon.utils import load_net_in
-import os
 import numpy as np
 import matplotlib.pyplot as plt
+from cartoon.utils import postprocess
 
 if __name__ == '__main__':
     input_size = 512
