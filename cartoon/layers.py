@@ -9,9 +9,9 @@ class VggPreprocess(Layer):
         super(VggPreprocess, self).__init__(**kwargs)
 
     def call(self, x):
+        # xs : bgr-ordered, [0, 1]-ranged
         import numpy as np
-        # RGB->BGR
-        x = tf.reverse(x, axis=[-1])
+        x = x * 255
         x = x - tf.constant(np.array([103.939, 116.779, 123.68], dtype=np.float32))
         return x
 
