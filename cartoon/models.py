@@ -184,14 +184,6 @@ def cartoon_discriminator(input_size=256):
     return model
 
 
-def postprocess(ys):
-    # bgr -> rgb
-    ys = ys[...,::-1]
-    # [0, 1]-range
-    ys = ys * 0.5 + 0.5
-    return ys
-
-
 if __name__ == '__main__':
     from cartoon import MODEL_ROOT
     import os
