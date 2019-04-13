@@ -186,6 +186,7 @@ def cartoon_discriminator(input_size=256):
 
 if __name__ == '__main__':
     from cartoon import MODEL_ROOT
+    from cartoon.utils import postprocess
     import os
     import matplotlib.pyplot as plt
     input_size = 512
