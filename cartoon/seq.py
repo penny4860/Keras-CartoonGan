@@ -3,6 +3,8 @@
 import cv2
 import numpy as np
 import tensorflow as tf
+from cartoon.utils import preprocess
+
 ModelCheckpoint = tf.keras.callbacks.ModelCheckpoint
 TensorBoard = tf.keras.callbacks.TensorBoard
 ReduceLROnPlateau = tf.keras.callbacks.ReduceLROnPlateau
@@ -62,4 +64,35 @@ class BatchGenerator(Sequence):
 
     def on_epoch_end(self):
         np.random.shuffle(self.fnames)
+
+
+class IdenBatchGenerator(Sequence):
+    def __init__(self, fnames, batch_size, shuffle, input_size=256):
+        self.fnames = fnames
+        self.batch_size = batch_size
+        self.shuffle = shuffle
+        self.input_size = input_size
+        self.on_epoch_end()
+
+    def __len__(self):
+        return int(len(self.fnames) /self.batch_size)
+
+    def __getitem__(self, idx):
+        """
+        # Args
+            idx : batch index
+        # Returns
+            xs : (N, input_size, input_size, 3)
+                rgb-ordered images
+            ys : (N, input_size/4, input_size/4, 1)
+        """
+        batch_fnames = self.fnames[idx*self.batch_size: (idx+1)*self.batch_size]
+        xs = [cv2.imread(fname)[:,:,::-1] for fname in batch_fnames]
+        xs = np.array([preprocess(cv2.resize(img, (self.input_size,self.input_size))) for img in xs])
+        return xs, xs
+
+    def on_epoch_end(self):
+        np.random.shuffle(self.fnames)
+
+
 
