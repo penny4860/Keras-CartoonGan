@@ -16,7 +16,7 @@ def loss_func(y_true, y_pred):
     feat_model = vgg_feat_extractor()
     y_true_feat = feat_model(y_true)
     y_pred_feat = feat_model(y_pred)
-    loss = tf.losses.absolute_difference(y_true_feat, y_pred_feat)
+    loss = tf.losses.absolute_difference(y_true_feat, y_pred_feat, reduction=tf.losses.Reduction.MEAN)
     return loss
 
 
@@ -28,6 +28,8 @@ if __name__ == '__main__':
     
     batch_gen = IdenBatchGenerator(photo_fnames, batch_size=2, shuffle=True, input_size=256)
     model_g = cartoon_generator()
+    model_g.load_weights("../params/Hayao.h5")
+    
     model_g.compile(loss=loss_func,
                     optimizer=tf.keras.optimizers.Adam(1e-4))
     model_g.fit_generator(batch_gen,
