@@ -153,6 +153,37 @@ def cartoon_generator(input_size=256):
     return model
 
 
+def cartoon_discriminator(input_size=256):
+    input_shape=[input_size,input_size,3]
+    
+    x = Input(shape=input_shape, name="input")
+    img_input = x
+
+    # Block 1 : (256,256,3) -> (256,256,64)
+    x = Conv2D(32, (3, 3), strides=1, use_bias=True, padding='same', name="conv1")(x)
+    x = tf.keras.layers.LeakyReLU(alpha=0.2)(x)
+
+    x = Conv2D(64, (3, 3), strides=2, use_bias=True, padding='same', name="conv2_1")(x)
+    x = tf.keras.layers.LeakyReLU(alpha=0.2)(x)
+    x = Conv2D(64, (3, 3), strides=1, use_bias=True, padding='same', name="conv2_2")(x)
+    x = InstanceNormalization()(x)
+    x = tf.keras.layers.LeakyReLU(alpha=0.2)(x)
+
+    x = Conv2D(128, (3, 3), strides=2, use_bias=True, padding='same', name="conv3_1")(x)
+    x = tf.keras.layers.LeakyReLU(alpha=0.2)(x)
+    x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='same', name="conv3_2")(x)
+    x = InstanceNormalization()(x)
+    x = tf.keras.layers.LeakyReLU(alpha=0.2)(x)
+
+    x = Conv2D(256, (3, 3), strides=1, use_bias=True, padding='same', name="conv4")(x)
+    x = InstanceNormalization()(x)
+    x = tf.keras.layers.LeakyReLU(alpha=0.2)(x)
+    
+    x = Conv2D(1, (3, 3), strides=1, use_bias=True, padding='same', activation='sigmoid', name="conv5")(x)
+    model = Model(img_input, x, name='cartoon_discriminator')
+    return model
+
+
 def postprocess(ys):
     # bgr -> rgb
     ys = ys[...,::-1]
@@ -162,31 +193,35 @@ def postprocess(ys):
 
 
 if __name__ == '__main__':
-    from cartoon import MODEL_ROOT
-    import os
-    import matplotlib.pyplot as plt
-    input_size = 512
-    model_names = ["Hayao", "Hosoda", "Paprika", "Shinkai"]
-    model = cartoon_generator(input_size=input_size)
-
-    fig, ax = plt.subplots()
-    plt.subplot(1, 5, 1)
-    plt.axis('off')
-    plt.title("input")
-    plt.imshow(postprocess(load_net_in()))
     
-    for i, model_name in enumerate(model_names):
-        
-        model_path = os.path.join(MODEL_ROOT, "{}.h5".format(model_name))
-        model.load_weights(model_path)
+    model = cartoon_discriminator()
+    model.summary()
     
-        imgs = np.expand_dims(load_net_in(desired_size=input_size), axis=0)
-        ys = model.predict(imgs)
-        y = postprocess(ys)[0]
-
-        plt.subplot(1, 5, i+2)
-        plt.axis('off')
-        plt.title(model_name)
-        plt.imshow(y)
-    plt.show()
+#     from cartoon import MODEL_ROOT
+#     import os
+#     import matplotlib.pyplot as plt
+#     input_size = 512
+#     model_names = ["Hayao", "Hosoda", "Paprika", "Shinkai"]
+#     model = cartoon_generator(input_size=input_size)
+# 
+#     fig, ax = plt.subplots()
+#     plt.subplot(1, 5, 1)
+#     plt.axis('off')
+#     plt.title("input")
+#     plt.imshow(postprocess(load_net_in()))
+#     
+#     for i, model_name in enumerate(model_names):
+#         
+#         model_path = os.path.join(MODEL_ROOT, "{}.h5".format(model_name))
+#         model.load_weights(model_path)
+#     
+#         imgs = np.expand_dims(load_net_in(desired_size=input_size), axis=0)
+#         ys = model.predict(imgs)
+#         y = postprocess(ys)[0]
+# 
+#         plt.subplot(1, 5, i+2)
+#         plt.axis('off')
+#         plt.title(model_name)
+#         plt.imshow(y)
+#     plt.show()
 
