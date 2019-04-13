@@ -13,7 +13,13 @@ def load_net_in(img_fname=SAMPLE_IMG, desired_size=256):
     input_image = preprocess(input_image)
     return input_image
 
-def preprocess(xs):    
+def preprocess(xs):
+    """
+    # Args
+        xs : rgb-ordered, [0, 255]-ranged
+    # Return
+        xs : bgr-ordered, [-1, +1]-ranged
+    """
     # preprocess, (-1, 1)
     # rgb -> bgr
     xs = xs[...,::-1]
@@ -22,6 +28,12 @@ def preprocess(xs):
     return xs
     
 def postprocess(ys):
+    """
+    # Args
+        ys : bgr-ordered, [-1, +1]-ranged
+    # Return
+        ys : rgb-ordered, [0, +1]-ranged
+    """
     # bgr -> rgb
     ys = ys[...,::-1]
     # [0, 1]-range
