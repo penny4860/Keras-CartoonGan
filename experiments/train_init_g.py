@@ -23,14 +23,15 @@ def loss_func(y_true, y_pred):
 
 if __name__ == '__main__':
     
-    photo_fnames = glob.glob("C:/Users/penny/git/dataset/cartoon_dataset/photo/*.*")
+    photo_fnames = glob.glob("../../dataset/cartoon_dataset/photo/*.*")
     from cartoon.models import cartoon_generator
     from cartoon.seq import IdenBatchGenerator, create_callbacks
     
     batch_gen = IdenBatchGenerator(photo_fnames, batch_size=BATCH_SIZE, shuffle=True, input_size=256)
+    
     model_g = cartoon_generator()
     # model_g.load_weights("../params/Hayao.h5")
-    
+     
     model_g.compile(loss=loss_func,
                     optimizer=tf.keras.optimizers.Adam(1e-4))
     model_g.fit_generator(batch_gen,
