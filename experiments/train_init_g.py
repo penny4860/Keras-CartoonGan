@@ -9,6 +9,7 @@ from cartoon.vgg import vgg_feat_extractor
 
 np.random.seed(1337)
 
+BATCH_SIZE = 8
 
 def loss_func(y_true, y_pred):
     # 1. activate prediction & truth tensor
@@ -26,9 +27,9 @@ if __name__ == '__main__':
     from cartoon.models import cartoon_generator
     from cartoon.seq import IdenBatchGenerator, create_callbacks
     
-    batch_gen = IdenBatchGenerator(photo_fnames, batch_size=2, shuffle=True, input_size=256)
+    batch_gen = IdenBatchGenerator(photo_fnames, batch_size=BATCH_SIZE, shuffle=True, input_size=256)
     model_g = cartoon_generator()
-    model_g.load_weights("../params/Hayao.h5")
+    # model_g.load_weights("../params/Hayao.h5")
     
     model_g.compile(loss=loss_func,
                     optimizer=tf.keras.optimizers.Adam(1e-4))
