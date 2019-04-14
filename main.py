@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from cartoon import MODEL_ROOT
-from cartoon.models import cartoon_generator, postprocess
+from cartoon.models import cartoon_generator
+from cartoon.utils import postprocess
 from cartoon.utils import load_net_in
 import os
 import numpy as np
