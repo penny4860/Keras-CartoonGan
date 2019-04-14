@@ -2,7 +2,6 @@
 
 
 import numpy as np
-import os
 import glob
 import tensorflow as tf
 from cartoon.vgg import vgg_feat_extractor
@@ -35,9 +34,9 @@ if __name__ == '__main__':
     model_g.compile(loss=loss_func,
                     optimizer=tf.keras.optimizers.Adam(1e-4))
     model_g.fit_generator(batch_gen,
-                          steps_per_epoch=len(batch_gen),
+                          steps_per_epoch=1,
                           callbacks=create_callbacks(saved_weights_name="init_generator.h5"),
                           validation_data = batch_gen,
-                          validation_steps = len(batch_gen),
+                          validation_steps = 1,
                           epochs=2000)
     
