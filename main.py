@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import argparse
 
 INPUT_IMG_FNAME = "sample_in/sjtu.jpg"
-INPUT_SIZE = 512
+INPUT_SIZE = 256
 
 argparser = argparse.ArgumentParser(description='CartoonGan')
 argparser.add_argument(
@@ -27,7 +27,7 @@ argparser.add_argument(
 
 if __name__ == '__main__':
     args = argparser.parse_args()
-    model_names = ["params/Hayao.h5", "params/Hosoda.h5", "params/Paprika.h5", "params/Shinkai.h5"]
+    model_names = ["../dataset/cartoon_dataset/params/init_generator_loss_9.h5", "params/Hosoda.h5", "params/Paprika.h5", "params/Shinkai.h5"]
     model = cartoon_generator(input_size=args.input_size)
 
     fig, ax = plt.subplots()
