@@ -96,12 +96,8 @@ if __name__ == '__main__':
     cartoon_fnames = glob.glob("../../dataset/cartoon_dataset/cartoon/*.*")
     cartoon_smooth_fnames = glob.glob("../../dataset/cartoon_dataset/cartoon_smooth/*.*")
     
-    print(len(photo_fnames), len(cartoon_fnames), len(cartoon_smooth_fnames))
     from cartoon.seq import CartoonBatchGenerator
     batch_generator = CartoonBatchGenerator(cartoon_fnames, cartoon_smooth_fnames, photo_fnames, batch_size=4)
-    cartoon_imgs, cartoon_smooth_imgs, photo_imgs = batch_generator[0]
-    print(cartoon_imgs.shape, cartoon_smooth_imgs.shape, photo_imgs.shape)
-    
     gan = CartoonGan()
     gan.train(batch_generator)
 
