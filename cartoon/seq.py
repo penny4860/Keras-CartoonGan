@@ -110,7 +110,9 @@ class CartoonBatchGenerator(Sequence):
         self.on_epoch_end()
 
     def __len__(self):
-        length = min(self.cartoon_fnames, self.cartoon_smooth_fnames, self.photo_fnames)
+        length = min(len(self.cartoon_fnames),
+                     len(self.cartoon_smooth_fnames), 
+                     len(self.photo_fnames))
         return int(length /self.batch_size)
 
     def __getitem__(self, idx):
