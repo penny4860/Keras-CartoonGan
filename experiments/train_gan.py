@@ -27,11 +27,6 @@ def g_loss_func(y_true, y_pred):
     y_true_feat = feat_model(y_true)
     y_pred_feat = feat_model(y_pred)
     vgg_contents_loss = tf.losses.absolute_difference(y_true_feat, y_pred_feat)
-
-#     target = tf.ones(y_shape)
-#     d_loss = tf.keras.backend.binary_crossentropy(target, 
-#                                                   y_pred)
-#     loss = vgg_contents_loss + d_loss
     return vgg_contents_loss
 
 
@@ -45,8 +40,8 @@ class CartoonGan():
         # Build and compile the discriminator
         self.discriminator = cartoon_discriminator(input_size)
         self.discriminator.compile(loss='binary_crossentropy',
-                                   optimizer=optimizer,
-                                   metrics=['accuracy'])
+                                   optimizer=optimizer)
+                                   # metrics=['accuracy'])
 
         # Build the generator
         self.generator = cartoon_generator(input_size)
@@ -64,78 +59,36 @@ class CartoonGan():
         # The combined model  (stacked generator and discriminator)
         # Trains the generator to fool the discriminator
         # D(G(x))
-        self.discriminator_generator = Model(p_tensor, validity)
+        self.discriminator_generator = Model(p_tensor,
+                                             outputs=[generated_catroon_tensor, validity])
         self.discriminator_generator.compile(loss=[g_loss_func, 'binary_crossentropy'],
-                                             loss_weights=[1.0, 1.0],
+                                             loss_weights=[10.0, 1.0],
                                              optimizer=optimizer)
 
-    def train(self, epochs, batch_size=128, sample_interval=50):
-
-        # Load the dataset
-        (X_train, _), (_, _) = mnist.load_data()
-
-        # Rescale -1 to 1
-        X_train = X_train / 127.5 - 1.
-        X_train = np.expand_dims(X_train, axis=3)
-
-        # Adversarial ground truths
-        valid = np.ones((batch_size, 1))
-        fake = np.zeros((batch_size, 1))
+    def train(self, batch_generator, epochs=100):
+        # Adversarial loss ground truths
+        valid = np.ones((batch_generator.batch_size,) + (64,64,1))
+        fake = np.zeros((batch_generator.batch_size,) + (64,64,1))
 
         for epoch in range(epochs):
-
-            # ---------------------
-            #  Train Discriminator
-            # ---------------------
-
-            # Select a random batch of images
-            idx = np.random.randint(0, X_train.shape[0], batch_size)
-            imgs = X_train[idx]
-
-            noise = np.random.normal(0, 1, (batch_size, self.latent_dim))
-
-            # Generate a batch of new images
-            gen_imgs = self.generator.predict(noise)
-
-            # Train the discriminator
-            d_loss_real = self.discriminator.train_on_batch(imgs, valid)
-            d_loss_fake = self.discriminator.train_on_batch(gen_imgs, fake)
-            d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
-
-            # ---------------------
-            #  Train Generator
-            # ---------------------
-
-            noise = np.random.normal(0, 1, (batch_size, self.latent_dim))
-
-            # Train the generator (to have the discriminator label samples as valid)
-            g_loss = self.combined.train_on_batch(noise, valid)
-
-            # Plot the progress
-            print ("%d [D loss: %f, acc.: %.2f%%] [G loss: %f]" % (epoch, d_loss[0], 100*d_loss[1], g_loss))
-
-            # If at save interval => save generated image samples
-            if epoch % sample_interval == 0:
-                self.sample_images(epoch)
-
-    def sample_images(self, epoch):
-        r, c = 5, 5
-        noise = np.random.normal(0, 1, (r * c, self.latent_dim))
-        gen_imgs = self.generator.predict(noise)
-
-        # Rescale images 0 - 1
-        gen_imgs = 0.5 * gen_imgs + 0.5
-
-        fig, axs = plt.subplots(r, c)
-        cnt = 0
-        for i in range(r):
-            for j in range(c):
-                axs[i,j].imshow(gen_imgs[cnt, :,:,0], cmap='gray')
-                axs[i,j].axis('off')
-                cnt += 1
-        fig.savefig("images/%d.png" % epoch)
-        plt.close()
-
+            for batch_i, (cartoon_imgs, cartoon_smooth_imgs, photo_imgs) in enumerate(batch_generator):
+ 
+                # ----------------------
+                #  Train Discriminators
+                # ----------------------
+                gen_cartoon_imgs = self.generator.predict(photo_imgs)
+ 
+                d_loss_real = self.discriminator.train_on_batch(cartoon_imgs, valid)
+                d_loss_smooth = self.discriminator.train_on_batch(cartoon_smooth_imgs, fake)
+                d_loss_fake = self.discriminator.train_on_batch(gen_cartoon_imgs, fake)
+                d_loss = (d_loss_real + d_loss_smooth + d_loss_fake) / 3
+ 
+                # ------------------
+                #  Train Generators
+                # ------------------
+                g_loss = self.discriminator_generator.train_on_batch(photo_imgs,
+                                                                     [photo_imgs, valid])
+                print("{}, {}, d_loss: {}, g_loss: {}".format(epoch, batch_i, d_loss, g_loss))
 
 if __name__ == '__main__':
     import glob
@@ -144,18 +97,14 @@ if __name__ == '__main__':
     cartoon_smooth_fnames = glob.glob("../../dataset/cartoon_dataset/cartoon_smooth/*.*")
     
     print(len(photo_fnames), len(cartoon_fnames), len(cartoon_smooth_fnames))
-
+    from cartoon.seq import CartoonBatchGenerator
+    batch_generator = CartoonBatchGenerator(cartoon_fnames, cartoon_smooth_fnames, photo_fnames, batch_size=4)
+    cartoon_imgs, cartoon_smooth_imgs, photo_imgs = batch_generator[0]
+    print(cartoon_imgs.shape, cartoon_smooth_imgs.shape, photo_imgs.shape)
+    
     gan = CartoonGan()
-    gan.train(epochs=30000, batch_size=32, sample_interval=200)
+    gan.train(batch_generator)
 
-    from cartoon.seq import IdenBatchGenerator
-    BATCH_SIZE = 8
-    batch_gen = IdenBatchGenerator(photo_fnames,
-                                   batch_size=BATCH_SIZE,
-                                   shuffle=True,
-                                   input_size=256)
-    xs, _ = batch_gen[0]
-    print(xs.shape)
 
 
 
