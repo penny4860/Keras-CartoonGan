@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 import tensorflow as tf
 from cartoon.utils import preprocess
-from experiments.train_gan import cartoon_smooth_fnames
 
 ModelCheckpoint = tf.keras.callbacks.ModelCheckpoint
 TensorBoard = tf.keras.callbacks.TensorBoard
@@ -133,7 +132,9 @@ class CartoonBatchGenerator(Sequence):
         return load(batch_cartoon_fnames), load(batch_cartoon_smooth_fnames), load(batch_photo_fnames)
 
     def on_epoch_end(self):
-        np.random.shuffle(self.fnames)
+        np.random.shuffle(self.cartoon_fnames)
+        np.random.shuffle(self.cartoon_smooth_fnames)
+        np.random.shuffle(self.photo_fnames)
 
 
 
