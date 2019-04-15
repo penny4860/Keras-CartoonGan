@@ -41,7 +41,6 @@ class CartoonGan():
         self.discriminator = cartoon_discriminator(input_size)
         self.discriminator.compile(loss='binary_crossentropy',
                                    optimizer=optimizer)
-                                   # metrics=['accuracy'])
 
         # Build the generator
         self.generator = cartoon_generator(input_size)
