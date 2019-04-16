@@ -2,6 +2,7 @@
 
 from __future__ import print_function, division
 
+import os
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
@@ -89,6 +90,28 @@ class CartoonGan():
                 g_loss = self.discriminator_generator.train_on_batch(photo_imgs,
                                                                      [photo_imgs, valid])
                 print("{}, {}, d_loss: {}, g_loss: {}".format(epoch, batch_i, d_loss, g_loss))
+            if epoch % 10 == 0:
+                self.sample_image(epoch)
+
+    def sample_images(self, epoch):
+        from cartoon.utils import preprocess, postprocess
+        os.makedirs('generated_imgs', exist_ok=True)
+        
+        fname = "../../dataset/cartoon_dataset/photo/raccoon-1.jpg"
+        img = cv2.resize(cv2.imread(fname)[:,:,::-1], (256,256))
+        imgs = preprocess(np.expand_dims(img, axis=0))
+        gen_imgs = self.generator.predict(imgs)
+        gen_img = postprocess(gen_imgs)[0]
+
+        titles = ['Original', 'Cartoonized']
+        fig, axs = plt.subplots(1, 2)
+        axs[0,0].imshow(img)
+        axs[0,1].imshow(gen_img)
+
+        fig.savefig("generated_imgs/{}.png" % (epoch))
+        plt.close()
+
+
 
 if __name__ == '__main__':
     import glob
