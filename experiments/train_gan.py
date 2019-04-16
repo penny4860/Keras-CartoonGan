@@ -31,7 +31,7 @@ def g_loss_func(y_true, y_pred):
 
 
 class CartoonGan():
-    def __init__(self, pretrained_generator_fname="../../dataset/cartoon_dataset/params/init_generator_loss_9.h5"):
+    def __init__(self, pretrained_generator_fname="../../dataset/cartoon_dataset/params/init_generator.h5"):
         input_size = 256
 
         self.img_shape = (input_size, input_size, 3)
