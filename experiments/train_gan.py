@@ -93,6 +93,7 @@ class CartoonGan():
                 print("{}, {}, d_loss: {}, g_loss: {}".format(epoch, batch_i, d_loss, g_loss))
             if epoch % 10 == 0:
                 self.sample_images(epoch)
+                self.generator.save_weights("{}.h5".format(epoch))
 
     def sample_images(self, epoch):
         from cartoon.utils import preprocess, postprocess
