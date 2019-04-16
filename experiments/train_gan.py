@@ -6,6 +6,7 @@ import os
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
+import cv2
 
 Input = tf.keras.layers.Input
 Conv2D = tf.keras.layers.Conv2D
@@ -91,7 +92,7 @@ class CartoonGan():
                                                                      [photo_imgs, valid])
                 print("{}, {}, d_loss: {}, g_loss: {}".format(epoch, batch_i, d_loss, g_loss))
             if epoch % 10 == 0:
-                self.sample_image(epoch)
+                self.sample_images(epoch)
 
     def sample_images(self, epoch):
         from cartoon.utils import preprocess, postprocess
@@ -103,12 +104,17 @@ class CartoonGan():
         gen_imgs = self.generator.predict(imgs)
         gen_img = postprocess(gen_imgs)[0]
 
-        titles = ['Original', 'Cartoonized']
-        fig, axs = plt.subplots(1, 2)
-        axs[0,0].imshow(img)
-        axs[0,1].imshow(gen_img)
+        fig, ax = plt.subplots()
+        plt.subplot(1, 2, 1)
+        plt.axis('off')
+        plt.title("input photo")
+        plt.imshow(img)
+        plt.subplot(1, 2, 2)
+        plt.axis('off')
+        plt.title("cartoonized")
+        plt.imshow(gen_img)
 
-        fig.savefig("generated_imgs/{}.png" % (epoch))
+        fig.savefig("generated_imgs/{}.jpg".format(epoch))
         plt.close()
 
 
