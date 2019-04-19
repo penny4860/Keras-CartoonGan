@@ -133,6 +133,8 @@ if __name__ == '__main__':
     cartoon_fnames = glob.glob(root + "/cartoon/*.*")
     cartoon_smooth_fnames = glob.glob(root + "/cartoon_smooth/*.*")
     
+    print(len(photo_fnames), len(cartoon_fnames), len(cartoon_smooth_fnames))
+    
     from cartoon.seq import CartoonBatchGenerator
     batch_generator = CartoonBatchGenerator(cartoon_fnames, cartoon_smooth_fnames, photo_fnames, batch_size=4)
     gan = CartoonGan(pretrained_generator_fname="/content/gdrive/My Drive/dataset/cartoon-gan/init_generator_loss_9.h5")
