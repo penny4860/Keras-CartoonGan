@@ -67,7 +67,7 @@ class CartoonGan():
                                              loss_weights=[10.0, 1.0],
                                              optimizer=optimizer)
 
-    def train(self, batch_generator, epochs=50000):
+    def train(self, batch_generator, sample_fname, epochs=50000):
         # Adversarial loss ground truths
         valid = np.ones((batch_generator.batch_size,) + (64,64,1))
         fake = np.zeros((batch_generator.batch_size,) + (64,64,1))
@@ -92,7 +92,7 @@ class CartoonGan():
             print("{}-th step, d_loss: {}, g_loss: {}".format(batch_i, d_loss, g_loss))
 
             if batch_i % 10 == 0:
-                self.sample_images(batch_i)
+                self.sample_images(batch_i, sample_fname)
                 self.generator.save_weights("{}.h5".format(batch_i))
             
             if batch_i == epochs:
@@ -100,12 +100,11 @@ class CartoonGan():
                 
                 
 
-    def sample_images(self, epoch):
+    def sample_images(self, epoch, sample_fname):
         from cartoon.utils import preprocess, postprocess
         os.makedirs('generated_imgs', exist_ok=True)
         
-        fname = "../../dataset/cartoon_dataset/photo/raccoon-1.jpg"
-        img = cv2.resize(cv2.imread(fname)[:,:,::-1], (256,256))
+        img = cv2.resize(cv2.imread(sample_fname)[:,:,::-1], (256,256))
         imgs = preprocess(np.expand_dims(img, axis=0))
         gen_imgs = self.generator.predict(imgs)
         gen_img = postprocess(gen_imgs)[0]
@@ -138,7 +137,8 @@ if __name__ == '__main__':
     from cartoon.seq import CartoonBatchGenerator
     batch_generator = CartoonBatchGenerator(cartoon_fnames, cartoon_smooth_fnames, photo_fnames, batch_size=4)
     gan = CartoonGan(pretrained_generator_fname="/content/gdrive/My Drive/dataset/cartoon-gan/init_generator_loss_9.h5")
-    gan.train(batch_generator)
+    gan.train(batch_generator,
+              sample_fname=photo_fnames[0])
 
 
 
