@@ -127,13 +127,15 @@ class CartoonGan():
 
 if __name__ == '__main__':
     import glob
-    photo_fnames = glob.glob("../../dataset/cartoon_dataset/photo/*.*")
-    cartoon_fnames = glob.glob("../../dataset/cartoon_dataset/cartoon/*.*")
-    cartoon_smooth_fnames = glob.glob("../../dataset/cartoon_dataset/cartoon_smooth/*.*")
+    
+    root = "/content/gdrive/My Drive/dataset/cartoon-gan/inuyasa"
+    photo_fnames = glob.glob(root + "/photo/*.*")
+    cartoon_fnames = glob.glob(root + "/cartoon/*.*")
+    cartoon_smooth_fnames = glob.glob(root + "/cartoon_smooth/*.*")
     
     from cartoon.seq import CartoonBatchGenerator
     batch_generator = CartoonBatchGenerator(cartoon_fnames, cartoon_smooth_fnames, photo_fnames, batch_size=4)
-    gan = CartoonGan()
+    gan = CartoonGan(pretrained_generator_fname="/content/gdrive/My Drive/dataset/cartoon-gan/init_generator_loss_9.h5")
     gan.train(batch_generator)
 
 
