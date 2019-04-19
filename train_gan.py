@@ -67,33 +67,38 @@ class CartoonGan():
                                              loss_weights=[10.0, 1.0],
                                              optimizer=optimizer)
 
-    def train(self, batch_generator, epochs=100):
+    def train(self, batch_generator, epochs=50000):
         # Adversarial loss ground truths
         valid = np.ones((batch_generator.batch_size,) + (64,64,1))
         fake = np.zeros((batch_generator.batch_size,) + (64,64,1))
 
-        for epoch in range(epochs):
-            for batch_i, (cartoon_imgs, cartoon_smooth_imgs, photo_imgs) in enumerate(batch_generator):
- 
-                # ----------------------
-                #  Train Discriminators
-                # ----------------------
-                gen_cartoon_imgs = self.generator.predict(photo_imgs)
- 
-                d_loss_real = self.discriminator.train_on_batch(cartoon_imgs, valid)
-                d_loss_smooth = self.discriminator.train_on_batch(cartoon_smooth_imgs, fake)
-                d_loss_fake = self.discriminator.train_on_batch(gen_cartoon_imgs, fake)
-                d_loss = (d_loss_real + d_loss_smooth + d_loss_fake) / 3
- 
-                # ------------------
-                #  Train Generators
-                # ------------------
-                g_loss = self.discriminator_generator.train_on_batch(photo_imgs,
-                                                                     [photo_imgs, valid])
-                print("{}, {}, d_loss: {}, g_loss: {}".format(epoch, batch_i, d_loss, g_loss))
-            if epoch % 10 == 0:
-                self.sample_images(epoch)
-                self.generator.save_weights("{}.h5".format(epoch))
+        for batch_i, (cartoon_imgs, cartoon_smooth_imgs, photo_imgs) in enumerate(batch_generator):
+        
+            # ----------------------
+            #  Train Discriminators
+            # ----------------------
+            gen_cartoon_imgs = self.generator.predict(photo_imgs)
+        
+            d_loss_real = self.discriminator.train_on_batch(cartoon_imgs, valid)
+            d_loss_smooth = self.discriminator.train_on_batch(cartoon_smooth_imgs, fake)
+            d_loss_fake = self.discriminator.train_on_batch(gen_cartoon_imgs, fake)
+            d_loss = (d_loss_real + d_loss_smooth + d_loss_fake) / 3
+        
+            # ------------------
+            #  Train Generators
+            # ------------------
+            g_loss = self.discriminator_generator.train_on_batch(photo_imgs,
+                                                                 [photo_imgs, valid])
+            print("{}-th step, d_loss: {}, g_loss: {}".format(batch_i, d_loss, g_loss))
+
+            if batch_i % 10 == 0:
+                self.sample_images(batch_i)
+                self.generator.save_weights("{}.h5".format(batch_i))
+            
+            if batch_i == epochs:
+                break
+                
+                
 
     def sample_images(self, epoch):
         from cartoon.utils import preprocess, postprocess
