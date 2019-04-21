@@ -94,5 +94,49 @@ class IdenBatchGenerator(Sequence):
     def on_epoch_end(self):
         np.random.shuffle(self.fnames)
 
+# cartoon / edge-smoothing / photo
+class CartoonBatchGenerator(Sequence):
+    def __init__(self,
+                 cartoon_fnames,
+                 cartoon_smooth_fnames,
+                 photo_fnames,
+                 batch_size, input_size=256):
+        self.cartoon_fnames = cartoon_fnames
+        self.cartoon_smooth_fnames = cartoon_smooth_fnames
+        self.photo_fnames = photo_fnames
+        
+        self.batch_size = batch_size
+        self.input_size = input_size
+        self.on_epoch_end()
+
+    def __len__(self):
+        length = min(len(self.cartoon_fnames),
+                     len(self.cartoon_smooth_fnames), 
+                     len(self.photo_fnames))
+        return int(length /self.batch_size)
+
+    def __getitem__(self, idx):
+        """
+        # Args
+            idx : batch index
+        # Returns
+            xs : (N, input_size, input_size, 3)
+                rgb-ordered images
+            ys : (N, input_size/4, input_size/4, 1)
+        """
+        def load(fnames):
+            xs = [cv2.imread(fname)[:,:,::-1] for fname in fnames]
+            xs = np.array([preprocess(cv2.resize(img, (self.input_size,self.input_size))) for img in xs])
+            return xs
+        batch_cartoon_fnames = self.cartoon_fnames[idx*self.batch_size: (idx+1)*self.batch_size]
+        batch_cartoon_smooth_fnames = self.cartoon_smooth_fnames[idx*self.batch_size: (idx+1)*self.batch_size]
+        batch_photo_fnames = self.photo_fnames[idx*self.batch_size: (idx+1)*self.batch_size]
+        return load(batch_cartoon_fnames), load(batch_cartoon_smooth_fnames), load(batch_photo_fnames)
+
+    def on_epoch_end(self):
+        np.random.shuffle(self.cartoon_fnames)
+        np.random.shuffle(self.cartoon_smooth_fnames)
+        np.random.shuffle(self.photo_fnames)
+
 
 
